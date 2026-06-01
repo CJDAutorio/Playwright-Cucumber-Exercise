@@ -5,6 +5,8 @@ export class Purchase {
   private readonly addToCart: string =
     'button[id="add-to-cart-sauce-labs-backpack"]';
   private readonly cartButton: string = '[data-test="shopping-cart-link"]';
+  private readonly cartButtonBadge: string =
+    '[data-test="shopping-cart-badge"]';
   private readonly checkoutButton: string = '[data-test="checkout"]';
   private readonly checkoutForm = {
     firstNameInput: '[data-test="firstName"]',
@@ -18,6 +20,10 @@ export class Purchase {
   private readonly checkoutCompleteHeader: string =
     '[data-test="complete-header"]';
   private readonly checkoutCompleteText: string = '[data-test="complete-text"]';
+  private readonly itemContainer: string = '[data-test="inventory-list"] > div';
+  private readonly addToCartGeneric: string = 'button[id^="add-to-cart-"]';
+  private readonly cartItem: string =
+    '[data-test="cart-list"] [data-test="inventory-item"]';
 
   constructor(page: Page) {
     this.page = page;
@@ -60,15 +66,34 @@ export class Purchase {
   }
 
   public async assertSuccessHeaderCorrect(expectedText: string) {
-    await expect(
-      this.page.locator(this.checkoutCompleteHeader),
-    ).toHaveText(expectedText);
+    await expect(this.page.locator(this.checkoutCompleteHeader)).toHaveText(
+      expectedText,
+    );
   }
 
   public async assertSuccessTextCorrect(expectedText: string) {
-    await expect(
-      this.page.locator(this.checkoutCompleteText),
-    ).toHaveText(expectedText);
+    await expect(this.page.locator(this.checkoutCompleteText)).toHaveText(
+      expectedText,
+    );
   }
 
+  public async addItemToShoppingCart(itemName: string) {
+    await this.page
+      .locator(this.itemContainer)
+      .filter({ hasText: itemName })
+      .locator(this.addToCartGeneric)
+      .click();
+  }
+
+  public async assertShoppingCartBadgeCount(expectedCount: number) {
+    await expect(
+      this.page.locator(`${this.cartButton} ${this.cartButtonBadge}`),
+    ).toHaveText(`${expectedCount}`);
+  }
+
+  public async assertItemIsVisibleInCart(itemName: string) {
+    await expect(
+      this.page.locator(this.cartItem).filter({ hasText: itemName }),
+    ).toBeVisible();
+  }
 }

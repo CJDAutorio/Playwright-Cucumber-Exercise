@@ -40,3 +40,15 @@ Then("The checkout success header should read {string}", async (expectedText) =>
 Then("The checkout success text should read {string}", async (expectedText) => {
   await new Purchase(getPage()).assertSuccessTextCorrect(expectedText);
 });
+
+Then("I will add {string} to the cart", async (itemName) => {
+  await new Purchase(getPage()).addItemToShoppingCart(itemName);
+});
+
+Then("The shopping cart badge count should be {int}", async (count) => {
+  await new Purchase(getPage()).assertShoppingCartBadgeCount(count);
+});
+
+Then("The cart should contain {string}", async (itemName) => {
+  await new Purchase(getPage()).assertItemIsVisibleInCart(itemName);
+});

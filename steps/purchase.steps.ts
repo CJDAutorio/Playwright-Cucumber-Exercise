@@ -52,3 +52,11 @@ Then("The shopping cart badge count should be {int}", async (count) => {
 Then("The cart should contain {string}", async (itemName) => {
   await new Purchase(getPage()).assertItemIsVisibleInCart(itemName);
 });
+
+Then("I will remove {string} from the cart", async (itemName) => {
+  await new Purchase(getPage()).removeItemFromCart(itemName);
+});
+
+Then("The cart should not contain {string}", async (itemName) => {
+  await new Purchase(getPage()).assertItemIsNotVisibleInCart(itemName);
+});

@@ -22,6 +22,7 @@ export class Purchase {
   private readonly checkoutCompleteText: string = '[data-test="complete-text"]';
   private readonly itemContainer: string = '[data-test="inventory-list"] > div';
   private readonly addToCartGeneric: string = 'button[id^="add-to-cart-"]';
+  private readonly removeFromCartGeneric: string = 'button[id^="remove-"]';
   private readonly cartItem: string =
     '[data-test="cart-list"] [data-test="inventory-item"]';
 
@@ -95,5 +96,19 @@ export class Purchase {
     await expect(
       this.page.locator(this.cartItem).filter({ hasText: itemName }),
     ).toBeVisible();
+  }
+
+  public async removeItemFromCart(itemName: string) {
+    await this.page
+      .locator(this.itemContainer)
+      .filter({ hasText: itemName })
+      .locator(this.removeFromCartGeneric)
+      .click();
+  }
+
+  public async assertItemIsNotVisibleInCart(itemName: string) {
+    await expect(
+      this.page.locator(this.cartItem).filter({ hasText: itemName }),
+    ).toHaveCount(0);
   }
 }

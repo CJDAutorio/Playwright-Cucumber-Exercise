@@ -1,8 +1,7 @@
 import { expect, Page } from "@playwright/test";
 
-export class Product {
+export class Purchase {
   private readonly page: Page;
-  // ================= CHECKOUT LOCATORS =================
   private readonly addToCart: string =
     'button[id="add-to-cart-sauce-labs-backpack"]';
   private readonly cartButton: string = '[data-test="shopping-cart-link"]';
@@ -20,13 +19,10 @@ export class Product {
     '[data-test="complete-header"]';
   private readonly checkoutCompleteText: string = '[data-test="complete-text"]';
 
-  // ================= PRODUCT LOCATORS =================
-
   constructor(page: Page) {
     this.page = page;
   }
 
-  // ================= CHECKOUT FUNCTIONS =================
   public async addBackPackToCart() {
     await this.page.locator(this.addToCart).click();
   }
@@ -74,7 +70,5 @@ export class Product {
       this.page.locator(this.checkoutCompleteText),
     ).toHaveText(expectedText);
   }
-
-  // ================= PRODUCT FUNCTIONS =================
 
 }

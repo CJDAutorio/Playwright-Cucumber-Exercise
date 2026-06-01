@@ -2,79 +2,38 @@ import { expect, Page } from "@playwright/test";
 
 export class Product {
   private readonly page: Page;
-  // ================= CHECKOUT LOCATORS =================
-  private readonly addToCart: string =
-    'button[id="add-to-cart-sauce-labs-backpack"]';
-  private readonly cartButton: string = '[data-test="shopping-cart-link"]';
-  private readonly checkoutButton: string = '[data-test="checkout"]';
-  private readonly checkoutForm = {
-    firstNameInput: '[data-test="firstName"]',
-    lastNameInput: '[data-test="lastName"]',
-    zipCodeInput: '[data-test="postalCode"]',
-  };
-  private readonly continueButton: string = '[data-test="continue"]';
-  private readonly finishButton: string = '[data-test="finish"]';
-  private readonly checkoutCompleteContainer: string =
-    '[data-test="checkout-complete-container"]';
-  private readonly checkoutCompleteHeader: string =
-    '[data-test="complete-header"]';
-  private readonly checkoutCompleteText: string = '[data-test="complete-text"]';
-
-  // ================= PRODUCT LOCATORS =================
+  private readonly sortDropdown: string =
+    '[data-test="product-sort-container"]';
+  private readonly itemContainer: string = '[data-test="inventory-list"] > div';
+  private readonly itemPrice: string = `[data-test="inventory-item-price"]`;
 
   constructor(page: Page) {
     this.page = page;
   }
 
-  // ================= CHECKOUT FUNCTIONS =================
-  public async addBackPackToCart() {
-    await this.page.locator(this.addToCart).click();
+  public async selectSortOption(sort: string) {
+    await this.page.locator(this.sortDropdown).selectOption({ label: sort });
   }
 
-  public async clickCartButton() {
-    await this.page.locator(this.cartButton).click();
+  public async assertPricesSorted(sort: string) {
+    // Get all prices
+    const prices: number[] = [];
+    for (
+      let i = 0;
+      i <
+      (await this.page
+        .locator(`${this.itemContainer} ${this.itemPrice}`)
+        .count());
+      i++
+    ) {
+      const priceFormatted = parseFloat((await this.page
+        .locator(`${this.itemContainer} ${this.itemPrice}`).nth(i).innerText()).replace("$", ""));
+      prices.push(priceFormatted);
+    }
+    console.log(`prices:`, prices);
+    const pricesSorted = [...prices].sort((a, b) =>
+      sort === "Price (low to high)" ? a - b : b - a,
+    );
+    expect(prices).toEqual(pricesSorted);
   }
-
-  public async clickCheckoutButton() {
-    await this.page.locator(this.checkoutButton).click();
-  }
-
-  public async fillCheckoutForm(
-    firstName: string,
-    lastName: string,
-    zipCode: string,
-  ) {
-    await this.page.locator(this.checkoutForm.firstNameInput).fill(firstName);
-    await this.page.locator(this.checkoutForm.lastNameInput).fill(lastName);
-    await this.page.locator(this.checkoutForm.zipCodeInput).fill(zipCode);
-  }
-
-  public async clickContinueButton() {
-    await this.page.locator(this.continueButton).click();
-  }
-
-  public async clickFinishButton() {
-    await this.page.locator(this.finishButton).click();
-  }
-
-  public async assertSuccessContainerVisible() {
-    await expect(
-      this.page.locator(this.checkoutCompleteContainer),
-    ).toBeVisible();
-  }
-
-  public async assertSuccessHeaderCorrect(expectedText: string) {
-    await expect(
-      this.page.locator(this.checkoutCompleteHeader),
-    ).toHaveText(expectedText);
-  }
-
-  public async assertSuccessTextCorrect(expectedText: string) {
-    await expect(
-      this.page.locator(this.checkoutCompleteText),
-    ).toHaveText(expectedText);
-  }
-
-  // ================= PRODUCT FUNCTIONS =================
-
 }
